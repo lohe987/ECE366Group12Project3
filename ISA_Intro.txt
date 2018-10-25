@@ -1,0 +1,59 @@
+1. Introduction. This should include the name of the architecture, overall philosophy,
+specific goals strived for and achieved.
+
+2. Instruction list. Give all the instructions, their formats, opcodes, and an example.
+
+3. Register design. How many registers are supported? Is there anything special about the
+registers?
+
+4. Control flow (branches). What types of branches are supported? How are the target
+addresses calculated? What is the maximum branch distance supported? Give examples
+of your assembly branch instructions and their corresponding machine code.
+
+5. Data memory addressing modes. What addressing modes are supported for data
+memory? How are the addresses calculated? Give examples of your assembly load / store
+instructions and their corresponding machine code.
+
+ F.A.S.T.
+ Fast Assembly Super Turbo
+
+ Philosophy is to minimize use of loops except for looping through entries and
+ have some instructed carry implicit details. There is some very specific instructions such as score and the add, sub. There is also use of unique machine codes mapped to instruction types to maximize versatility with limited number of bits.
+
+ Registers:
+ 2 bits will be used for registers so we will support 4 registered initialized to 0.
+  
+ instructions:		
+		op   regx  imm   
+ init  R imm    000  x    iii  (000 = 1 not 0) r = r0 or r1
+ 
+		op   regx  regy
+ Ld    R R      001  xx    yy   (load value of mem[regy] into regx)
+ 
+  		op   regx  regy 
+ Str   R R	010  xx    yy  (store value of regx into mem[valregy])
+ 
+ 		op        regx
+ addR 	 R	01100     xx   (r2 = regx + regx)
+ addR2   R 	01110     xx   (r2 = r2 + regx)
+ addR3	 R	01111     xx   (r3 = regx + regx)
+ 
+		op	  regx
+ subR3 	 R	01101     xx   (r3 = r3 - regx)
+
+      		op   regx  imm
+ addi  R imm    100  xx   ii   (regx = regx + imm)
+
+ 		op   regx  regy
+ sltR0  R R	101  xx    yy  (R0 = 1 if regx < regy)
+ 
+ 		op   reg  imm (imm number will go into a MUX to select project specific jumps)
+ beqR0 R imm 	11   00   iii 
+		11   01   iii
+ 		11   11   iii
+
+	        op        
+ scrR3R2        11. 10 011      (r3 = best match of r3 and r2 done using logic)
+                
+
+

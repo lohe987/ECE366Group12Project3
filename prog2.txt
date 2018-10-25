@@ -1,0 +1,39 @@
+Assembly:  				
+
+init r1, 3       # r1 = 3
+ld r2, (r1)      # r2 = mem[3] = T
+init r1, 8       # r1 = 8
+init r0, 6       # mem[6] will be our ptr       
+str r1, (r0) 	 # mem[6] = 8     
+loop:
+ld r3, (r1)      # r3 = mem[8] = Pattern_Arr
+scr r3, r2       # find score r3, r2(target) -> r3
+init r1, 4       # compare with highest score
+ld r0, (r1)      # r0 = mem[4] = S
+beqR0, r3, equal # if new score (r3) == S (r0)
+sltR0 r0, r3     # if new score > S  -> r0=1
+init r1, 1       # r1 = 1
+beqR0 r1 new     # new score > S -> reset S to new
+		 # else, next pattern
+jump2:
+init r0, 6       # r3 = 6
+ld r1, (r0)      # r1 = mem[6] (array ptr)
+addi r1, 1       # r1++
+str r1, (r0)     # mem[6] = ptr++
+beqR0 r0, loop   # jump to loop
+
+equal:
+init r0, 5       # r0 = 5
+ld r1, (r0)      # r0 = mem[5] = C
+addi r1, 1	 # r1++ (count++)
+str r1, (r0)     # mem[5] = r1
+beqR0, r0, jump2 # intermediate jump
+
+new:
+init r1, 4       # r1 = 4
+str r3, (r1)     # mem[4] = r3 (new score)
+init r1, 5       # r1 = 5
+init r0, 1       # r0 = 1
+str r0, (r1)     # mem[5] = 1 (reset count)
+beqR0, r0, jump2 # intermediate jump
+
