@@ -1,37 +1,27 @@
-# F.A.S.T. Prog 1
+# Program 1 by Group12 for Project3
+# 28, Oct, 2018
 
-init r3, 1   # register that will be exponentiated i.e. 6^p
-init r1, 7   # keep an incrementer in memory
-str r0, (r1) # mem[7] = 0 initially
+init R0, 0
+ld R2, R0       # R2 = P
 
-loop:
-init r1, 0		# r1 = 0
-ld r1, (r1)		# r1 = mem[0] = P
-beqR0 r1 finish		# if incrementer == P, finish
-			# else do exponentiation
-addR  r3		# r2 = r3 + r3 = 1 + 1
-addR2 r3		# r2 = r2 + r3 = 1 + 2 = 3
-addR3 r2		# r3 = r2 + r2 = 3 + 3 = 6
+init R0, 1
+ld R1, R0       # R1 = Q
 
-modloop:
-addi r2, 1		# r2 = 1
-ld r2, (r2)		# r2 = mem[1] = Q
-subR3 r2		# r3 = r3 - r2 
-addi r2, 0		# r2 = 0
-sltR0 r3, r2		# if r3 < 0 then r0 = 1
-addi r1, 1		# r1 = 1
-beqR0 r1, done		# if r3 < 0, branch out
-beqR0 r0, modloop	# keep subtracting
+init R3, 3      # R3 = MUX[3] = 6, the result of calculation
+init R0, 1      # the exponential counter
 
-done:
-addi r1, 1		# r1 = 1 + 1 = 2
-str r3, r1		# mem[2] = R = r3
-init r0, 7		# r0 = 7
-ld r0, (r0)		# r0 = mem[7] = incrementer
-addi r0, 1		# incrementer++
-beqR0 r0, loop		# jump back to loop
+L1:
+R3x6            # R3 = R3 * 6
+inc R0
+add R3, R1      # R3 = R3 + Q
 
-finish:
+L2:
+subR3 R1      # R3 = R3 - Q
+jpu R1, R3, L2  # jump to L2 if R1 < R3 (Q < Result)
+jpu R0, R1, L1  # jump to L1 if R0 < R1 (counter < P)
+
+Finish:
+
 
 
 
