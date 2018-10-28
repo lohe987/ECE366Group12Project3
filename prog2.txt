@@ -1,0 +1,62 @@
+# Program 2 by Group12 for Project3
+# 28, Oct, 2018
+
+init R0, 1
+inc R0
+inc R0         # R0 = 3
+ld R2, R0      # R2 = Target Pattern
+
+init R0,6
+inc R0
+inc R0         # R0 = 8, Memory Pointer
+
+init R1, 108
+
+Score:
+ld R3, R0
+score
+st R3, R0
+inc R0
+jpu R0, R1, Score
+
+init R0, 6
+inc R0
+inc R0         # R0 = 8, Memory Pointer
+init R1, 0     # the best score
+init R2, 0     # the best score counter
+
+FindBest:
+ld R3, R0
+jpu R3, R1, LessThanBest    # if (pointed score) < (best score), jump to LessThanBest
+jpu R1, R3, BiggerThanBest  # if (best score) < (curretn score), jump to BiggerThanBest
+
+inc R2                      # pc arrives here -> R1 = R3
+init R3, 108  
+jpu R0, R3, LessThanBest    # jump condition must be met, jump to LessThanBest 
+
+BiggerThanBest:
+init R1, 0
+add R1, R3    # reset best score
+init R2, 1    # reset counter = 1
+
+LessThanBest:
+inc R0
+init R3, 108
+jpu R0, R3, FindBest        # if (address pointer) < 108, jump back; else go out
+
+Out:
+init R0, 1
+inc R0
+inc R0
+inc R0        # RO = 4
+st R1, R0     # store the best score
+inc R0.       # R0 = 5
+st R2, R0     # store the counter
+
+
+
+
+
+
+
+
