@@ -4,20 +4,20 @@
 init R0, 1
 inc R0
 inc R0         # R0 = 3
-ld R2, R0      # R2 = Target Pattern
+ld R1, R0      # R1 = Target Pattern
 
-init R0,6
-inc R0
-inc R0         # R0 = 8, Memory Pointer
+init R2,6
+inc R2
+inc R2         # R2 = 8, Memory Pointer
 
-init R1, 108
+init R0, 108   # R1 = 108, exit memory address
 
-Score:
-ld R3, R0
+GetScore:
+ld R3, R2      # R3 = Current pattern
 score
-st R3, R0
-inc R0
-jpu R0, R1, Score
+st R3, R2
+inc R2
+jpu2 R2, R0, GetScore
 
 init R0, 6
 inc R0
@@ -27,12 +27,12 @@ init R2, 0     # the best score counter
 
 FindBest:
 ld R3, R0
-jpu R3, R1, LessThanBest    # if (pointed score) < (best score), jump to LessThanBest
-jpu R1, R3, BiggerThanBest  # if (best score) < (curretn score), jump to BiggerThanBest
+jpu2 R3, R1, LessThanBest    # if (pointed score) < (best score), jump to LessThanBest
+jpu1 R1, R3, BiggerThanBest  # if (best score) < (curretn score), jump to BiggerThanBest
 
 inc R2                      # pc arrives here -> R1 = R3
-init R3, 108  
-jpu R0, R3, LessThanBest    # jump condition must be met, jump to LessThanBest 
+init R3, 0  
+jpu2 R3, R0, LessThanBest    # R3=0 MUST < R0, jump condition is met, jump to LessThanBest 
 
 BiggerThanBest:
 init R1, 0
@@ -42,7 +42,7 @@ init R2, 1    # reset counter = 1
 LessThanBest:
 inc R0
 init R3, 108
-jpu R0, R3, FindBest        # if (address pointer) < 108, jump back; else go out
+jpu1 R0, R3, FindBest        # if (address pointer) < 108, jump back; else go out
 
 Out:
 init R0, 1

@@ -17,11 +17,13 @@ add R3, R1      # R3 = R3 + Q
 
 L2:
 subR3 R1      # R3 = R3 - Q
-jpu R1, R3, L2  # jump to L2 if R1 < R3 (Q < Result)
-jpu R0, R1, L1  # jump to L1 if R0 < R1 (counter < P)
+jpu1 R1, R3, L2  # jump to L2 if R1 < R3 (Q < Result) there should be Q<= Result
+jpu1 R0, R2, L1  # jump to L1 if R0 < R2 (counter < P)
 
 Finish:
 
-
+jpu2 R3, R1, END # R3 should <= R1(Q) here, if R3 < R1 (Result < Q) jump to END
+subR3 R1        # PC goes here only if R3 = R1 (Result = Q), when should subtract Q one more time
+END:
 
 
