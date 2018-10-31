@@ -10,20 +10,20 @@ ld R1, R0       # R1 = Q
 init R3, 3      # R3 = MUX[3] = 6, the result of calculation
 init R0, 1      # the exponential counter
 
-L1:
+L1:           # jpu1 MUX[01] = 6 (instruction mem address) 
 R3x6            # R3 = R3 * 6
 inc R0
 add R3, R1      # R3 = R3 + Q
 
-L2:
+L2:           # jpu1 MUX[00] = 9 (instruction mem address)
 subR3 R1      # R3 = R3 - Q
-jpu1 R1, R3, L2  # jump to L2 if R1 < R3 (Q < Result) there should be Q<= Result
-jpu1 R0, R2, L1  # jump to L1 if R0 < R2 (counter < P)
+jpu1 R1, R3, 00  # jump to L2 if R1 < R3 (Q < Result) there should be Q<= Result
+jpu1 R0, R2, 01  # jump to L1 if R0 < R2 (counter < P)
 
-Finish:
+Finish:       
 
-jpu2 R3, R1, END # R3 should <= R1(Q) here, if R3 < R1 (Result < Q) jump to END
+jpu2 R3, R1, 00 # R3 should <= R1(Q) here, if R3 < R1 (Result < Q) jump to END
 subR3 R1        # PC goes here only if R3 = R1 (Result = Q), when should subtract Q one more time
-END:
+END:           # jpu2 MUX[00] = 14 (instruction mem address) 
 
 
