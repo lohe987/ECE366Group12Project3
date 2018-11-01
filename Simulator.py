@@ -4,7 +4,7 @@ def disassemble(I):
 
 def assemble(I, lineCount1):
     file = open("i_machine_mem.txt", "w")
-    print("******* Assember Starts ********")
+    print("******* Assembler Start ********")
     for i in range(lineCount1):
         fetch = I[i]
         fetch = fetch.replace("R","")
@@ -22,7 +22,7 @@ def assemble(I, lineCount1):
                 imm = format(int(fetch[1]),"02b")
             op = "000"
             print(op + R + imm)
-            file.write(op + R + imm)
+            file.write(op + R + imm + "\n")
 
         elif (fetch[0:2] == "ld"):
             fetch = fetch.replace("ld","")
@@ -30,7 +30,7 @@ def assemble(I, lineCount1):
             Rx = format(int(fetch[0]),"02b")
             Ry = format(int(fetch[1]),"02b")
             op = "001"
-            file.write(op + Rx + Ry)
+            file.write(op + Rx + Ry + "\n")
 
         elif (fetch[0:2] == "st"):
             fetch = fetch.replace("st","")
@@ -38,7 +38,7 @@ def assemble(I, lineCount1):
             Rx = format(int(fetch[0]),"02b")
             Ry = format(int(fetch[1]),"02b")
             op = "010"
-            file.write(op + Rx + Ry)
+            file.write(op + Rx + Ry + "\n")
 
         elif (fetch[0:3] == "add"):
             fetch = fetch.replace("add","")
@@ -46,14 +46,13 @@ def assemble(I, lineCount1):
             Rx = format(int(fetch[0]),"02b")
             Ry = format(int(fetch[1]),"02b")
             op = "011"
-            file.write(op + Rx + Ry)        
+            file.write(op + Rx + Ry + "\n")        
 
         elif (fetch[0:4] == "jpu1"):
             fetch = fetch.replace("jpu1","")
             fetch = fetch.split(",")
             Rx = format(int(fetch[0]),"01b")
             Ry = format((int(fetch[1]) - 2),"01b")
-            print(fetch[2])
             if (fetch[2] == "9"):
                 imm = "00"    
             elif (fetch[2] == "6"):
@@ -62,9 +61,8 @@ def assemble(I, lineCount1):
                 imm = "10"
             elif (fetch[2] == "18"):
                 imm = "11"
-            print(imm)
             op = "100"
-            file.write(op + Rx + Ry + imm)
+            file.write(op + Rx + Ry + imm + "\n")
 
         elif (fetch[0:4] == "jpu2"):
             fetch = fetch.replace("jpu2","")
@@ -78,11 +76,25 @@ def assemble(I, lineCount1):
             elif (fetch[2] == "27"):
                 imm = "10"
             op = "101"
-            file.write(op + Rx + Ry + imm)    
- #       elif (fetch[0:4] == "subR3"):
- 
-            file.close()
-
+            file.write(op + Rx + Ry + imm + "\n")    
+        elif (fetch[0:4] == "sub3"):
+            fetch = fetch.replace("sub3", "")
+            Rx = format(int(fetch),"02b")
+            op = "11100"
+            file.write(op + Rx + "\n")     
+        elif (fetch[0:3] == "inc"):
+            fetch = fetch.replace("inc", "")
+            Rx = format(int(fetch),"02b")
+            op = "11101"
+            file.write(op + Rx + "\n")
+        elif (fetch[0:3] == "3x6"):
+            op = "1111110"
+            file.write(op + "\n")
+        elif (fetch[0:5] == "score"):
+            op = "1111111"
+            file.write(op + "\n")    
+    file.close()
+    print("******* Assembler End ********")
 
 def simulate(I,Nsteps,debug_mode,Memory):
     PC = 0              # Program-counter
