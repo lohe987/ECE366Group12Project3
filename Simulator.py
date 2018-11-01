@@ -2,8 +2,87 @@
 def disassemble(I):
     pass
 
-def assemble(I, lineCount):
-    pass
+def assemble(I, lineCount1):
+    file = open("i_machine_mem.txt", "w")
+    print("******* Assember Starts ********")
+    for i in range(lineCount1):
+        fetch = I[i]
+        fetch = fetch.replace("R","")
+        fetch = fetch.replace(" ","")
+        #print(fetch[0:4])
+        if (fetch[0:3] == "init"):
+            fetch = fetch.replace("init","")
+            fetch = fetch.split(",")
+            R = format(int(fetch[0]),"02b")
+            if (fetch[1] == "6"):
+                imm = "10"
+            elif (fetch[1] == "108"):
+                imm = "11"
+            else:
+                imm = format(int(fetch[1]),"02b")
+            op = "000"
+            print(op + R + imm)
+            file.write(op + R + imm)
+
+        elif (fetch[0:2] == "ld"):
+            fetch = fetch.replace("ld","")
+            fetch = fetch.split(",")
+            Rx = format(int(fetch[0]),"02b")
+            Ry = format(int(fetch[1]),"02b")
+            op = "001"
+            file.write(op + Rx + Ry)
+
+        elif (fetch[0:2] == "st"):
+            fetch = fetch.replace("st","")
+            fetch = fetch.split(",")
+            Rx = format(int(fetch[0]),"02b")
+            Ry = format(int(fetch[1]),"02b")
+            op = "010"
+            file.write(op + Rx + Ry)
+
+        elif (fetch[0:3] == "add"):
+            fetch = fetch.replace("add","")
+            fetch = fetch.split(",")
+            Rx = format(int(fetch[0]),"02b")
+            Ry = format(int(fetch[1]),"02b")
+            op = "011"
+            file.write(op + Rx + Ry)        
+
+        elif (fetch[0:4] == "jpu1"):
+            fetch = fetch.replace("jpu1","")
+            fetch = fetch.split(",")
+            Rx = format(int(fetch[0]),"01b")
+            Ry = format((int(fetch[1]) - 2),"01b")
+            print(fetch[2])
+            if (fetch[2] == "9"):
+                imm = "00"    
+            elif (fetch[2] == "6"):
+                imm = "01"
+            elif (fetch[2] == "24"):
+                imm = "10"
+            elif (fetch[2] == "18"):
+                imm = "11"
+            print(imm)
+            op = "100"
+            file.write(op + Rx + Ry + imm)
+
+        elif (fetch[0:4] == "jpu2"):
+            fetch = fetch.replace("jpu2","")
+            fetch = fetch.split(",")
+            Rx = format((int(fetch[0]) - 2),"01b")
+            Ry = format(int(fetch[1]),"01b")
+            if (fetch[2] == "14"):
+                imm = "00"    
+            elif (fetch[2] == "8"):
+                imm = "01"
+            elif (fetch[2] == "27"):
+                imm = "10"
+            op = "101"
+            file.write(op + Rx + Ry + imm)    
+ #       elif (fetch[0:4] == "subR3"):
+ 
+            file.close()
+
 
 def simulate(I,Nsteps,debug_mode,Memory):
     PC = 0              # Program-counter
@@ -45,7 +124,7 @@ def simulate(I,Nsteps,debug_mode,Memory):
             imm = MUX[int(fetch[5:7],2)]
             if Reg[Rx] < Reg[Ry]:
                 PC = imm
-            else
+            else:
                 PC += 1
         elif (fetch[0:3] == "101"):  # jpu2
             MUX = [14,8,27]
@@ -54,7 +133,7 @@ def simulate(I,Nsteps,debug_mode,Memory):
             imm = MUX[int(fetch[5:7],2)]
             if Reg[Rx] < Reg[Ry]:
                 PC = imm
-            else
+            else:
                 PC += 1
         elif (fetch[0:5] == "11100"): # subR3
             Ry = int(fetch[5:7],2)
@@ -85,7 +164,7 @@ def simulate(I,Nsteps,debug_mode,Memory):
 
             score = 0
             for i in range(0,16):
-                if binRx[i] == binRy[i]
+                if binRx[i] == binRy[i]:
                     score +=1
             Reg[3] = score
             PC += 1
@@ -127,6 +206,7 @@ def main():
     debug_mode = False  # is machine in debug mode?
     Nsteps = 3          # How many cycle to run before output statistics
     Instruction = []    # all instructions will be stored here
+    machineInstruction = [] 
     print(" 1 = simulator")
     print(" 2 = disassembler")
     print(" 3 = assembler")
@@ -167,7 +247,7 @@ def main():
     print("Calling assembler...")
     assemble(Instruction, lineCount)
     m_instr_file = open("i_machine_mem.txt", "r")
-    for line in m_str_file:
+    for line in m_instr_file:
         machineInstruction.append(line)
     m_instr_file.close() 
 
