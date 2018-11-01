@@ -115,13 +115,18 @@ def simulate(I,Nsteps,debug_mode,Memory):
     data.close()
 
 def main():
-    instr_file = open("i_mem.txt","r")
+    print("Welcome to ECE366 Project3 Group12 ISA Simulator!")
+    
+    program = int( input("Enter which program to run: ") )
+    if ( program == 1 ):
+        instr_file = open("prog1.txt","r")
+    elif ( program == 2 ):
+        instr_file = open("prog2.txt","r") 
     data_file = open("d_mem.txt","r")
     Memory = []
     debug_mode = False  # is machine in debug mode?
     Nsteps = 3          # How many cycle to run before output statistics
     Instruction = []    # all instructions will be stored here
-    print("Welcome to ECE366 Project3 Group12 ISA Simulator!")
     print(" 1 = simulator")
     print(" 2 = disassembler")
     print(" 3 = assembler")
@@ -158,6 +163,13 @@ def main():
         line = line.strip()
         Instruction.append(line)                        # Copy all instruction into a list
         lineCount += 1
+        
+    print("Calling assembler...")
+    assemble(Instruction, lineCount)
+    m_instr_file = open("i_machine_mem.txt", "r")
+    for line in m_str_file:
+        machineInstruction.append(line)
+    m_instr_file.close() 
 
     for line in data_file:  # Read in data memory
         if (line == "\n" or line[0] =='#'):              # empty lines,comments ignored
@@ -166,7 +178,7 @@ def main():
         Memory.append(int(line,2))
 
     if(mode == 1):   # Check wether to use disasembler or assembler or simulation
-        simulate(Instruction,Nsteps,debug_mode,Memory)
+        simulate(machineInstruction,Nsteps,debug_mode,Memory)
     elif(mode == 2):
         disassemble(Instruction)
     else:
