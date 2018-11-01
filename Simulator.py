@@ -2,7 +2,7 @@
 def disassemble(I):
     pass
 
-def assemble(I, ):
+def assemble(I, lineCount):
     pass
 
 def simulate(I,Nsteps,debug_mode,Memory):
