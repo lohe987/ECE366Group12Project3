@@ -2,7 +2,7 @@
 def disassemble(I):
     pass
 
-def assemble(I):
+def assemble(I, ):
     pass
 
 def simulate(I,Nsteps,debug_mode,Memory):
@@ -151,11 +151,13 @@ def main():
     #mode = 1            # 1 = Simulation
                         # 2 = disassembler
                         # 3 = assembler
+    lineCount = 0
     for line in instr_file: # Read in instr
         if (line == "\n" or line[0] =='#' or ':' in line):              # empty lines,comments ignored
             continue
         line = line.strip()
         Instruction.append(line)                        # Copy all instruction into a list
+        lineCount += 1
 
     for line in data_file:  # Read in data memory
         if (line == "\n" or line[0] =='#'):              # empty lines,comments ignored
@@ -168,7 +170,7 @@ def main():
     elif(mode == 2):
         disassemble(Instruction)
     else:
-        assemble(Instruction)
+        assemble(Instruction, lineCount)
 
     instr_file.close()
     data_file.close()
