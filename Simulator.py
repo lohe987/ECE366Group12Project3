@@ -2,8 +2,15 @@
 def disassemble(I):
     pass
 
-def assemble(I, lineCount1):
-    file = open("i_machine_mem.txt", "w")
+def assemble(I, lineCount1, program_dupe):
+    if ( program_dupe == 1 ):
+        file = open("i_machine_mem1.txt", "w")
+    elif ( program_dupe == 2 ):
+        file = open("i_machine_mem2.txt", "w")
+    else:
+        print("Error, unknown program option") 
+        exit()
+        
     print("******* Assembler Start ********")
     for i in range(lineCount1):
         fetch = I[i]
@@ -257,7 +264,7 @@ def main():
         lineCount += 1
         
     print("Calling assembler...")
-    assemble(Instruction, lineCount)
+    assemble(Instruction, lineCount, program)
     m_instr_file = open("i_machine_mem.txt", "r")
     for line in m_instr_file:
         machineInstruction.append(line)
@@ -273,8 +280,8 @@ def main():
         simulate(machineInstruction,Nsteps,debug_mode,Memory)
     elif(mode == 2):
         disassemble(Instruction)
-    else:
-        assemble(Instruction, lineCount)
+    #else:
+        #assemble(Instruction, lineCount, program)
 
     instr_file.close()
     data_file.close()
