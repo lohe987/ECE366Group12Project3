@@ -167,7 +167,7 @@ def main():
     print("Calling assembler...")
     assemble(Instruction, lineCount)
     m_instr_file = open("i_machine_mem.txt", "r")
-    for line in m_str_file:
+    for line in m_instr_file:
         machineInstruction.append(line)
     m_instr_file.close() 
 
