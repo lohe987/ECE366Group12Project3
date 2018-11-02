@@ -7,7 +7,7 @@ def disassemble(I):
     pass
 
 
-def assemble(I, lineCount1, program_dupe):
+def assemble(I, program_dupe):
 
     if program_dupe!=1 and program_dupe!=2:
         print("Error, unknown program option")
@@ -16,7 +16,7 @@ def assemble(I, lineCount1, program_dupe):
     file = open("prog"+str(program_dupe)+"_MachineCode.txt", "w")
 
     print("******* Assembler Start ********")
-    for i in range(lineCount1):
+    for i in range(len(I)):
         fetch = I[i]
         fetch = fetch.replace("R","")
         fetch = fetch.replace(" ","")
@@ -108,46 +108,46 @@ def assemble(I, lineCount1, program_dupe):
     print("******* Assembler End ********")
 
 
-def simulate(I, Instr, Nsteps, debug_mode, Memory):
+def simulate(MC, Instr, Nsteps, debug_mode, Memory):
     PC = 0              # Program-counter
     DIC = 0
     Reg = [0, 0, 0, 0]     # 4 registers, init to all 0
     print("******** Simulation starts *********")
     finished = False
     while not finished:
-        fetch = I[PC]
+        fetch = MC[PC]
         DIC += 1
         if debug_mode:
             print(fetch)
             print(Instr[PC])
             print()
         if fetch[0:3] == "000":  # init
-            MUX = [0,1,6,108]
+            MUX = [0, 1, 6, 108]
             R = int(fetch[3:5],2)
             MUXindex = int(fetch[5:7],2)
             imm = MUX[MUXindex]
             Reg[R] = imm
             PC += 1
         elif fetch[0:3] == "001":  # ld
-            Rx = int(fetch[3:5],2)
-            Ry = int(fetch[5:7],2)
+            Rx = int(fetch[3:5], 2)
+            Ry = int(fetch[5:7], 2)
             Reg[Rx] = Memory[Reg[Ry]]
             PC += 1
         elif fetch[0:3] == "010":  # st
-            Rx = int(fetch[3:5],2)
-            Ry = int(fetch[5:7],2)
+            Rx = int(fetch[3:5], 2)
+            Ry = int(fetch[5:7], 2)
             Memory[Reg[Ry]] = Reg[Rx]
             PC += 1
         elif fetch[0:3] == "011":  # add
-            Rx = int(fetch[3:5],2)
-            Ry = int(fetch[5:7],2)
+            Rx = int(fetch[3:5], 2)
+            Ry = int(fetch[5:7], 2)
             Reg[Rx] = Reg[Rx] + Reg[Ry]
             PC += 1
         elif fetch[0:3] == "100":  # jpu1
-            MUX = [9,6,24,18]
-            Rx = int(fetch[3],2)
-            Ry = 2 + int(fetch[4],2)
-            imm = MUX[int(fetch[5:7],2)]
+            MUX = [9, 6, 24, 18]
+            Rx = int(fetch[3], 2)
+            Ry = 2 + int(fetch[4], 2)
+            imm = MUX[int(fetch[5:7], 2)]
             if Reg[Rx] < Reg[Ry]:
                 PC = imm
             else:
@@ -161,7 +161,7 @@ def simulate(I, Instr, Nsteps, debug_mode, Memory):
                 PC = imm
             else:
                 PC += 1
-        elif fetch[0:5] == "11100": # subR3
+        elif fetch[0:5] == "11100":   # subR3
             Ry = int(fetch[5:7],2)
             Reg[3] = Reg[3] - Reg[Ry]
             PC += 1
@@ -169,12 +169,12 @@ def simulate(I, Instr, Nsteps, debug_mode, Memory):
             Rx = int(fetch[5:7],2)
             Reg[Rx] = Reg[Rx] + 1
             PC += 1
-        elif fetch == "1111110":
+        elif fetch == "1111110":      # R3x6
             Reg[3] = Reg[3]*6
             PC += 1
-        elif fetch == "1111111":
+        elif fetch == "1111111":      # score
             Rx = Reg[3]
-            Ry = Reg[2]
+            Ry = Reg[1]
             binRx = bin(Rx).replace('0b','')
             binRy = bin(Ry).replace('0b','')
 
@@ -195,10 +195,10 @@ def simulate(I, Instr, Nsteps, debug_mode, Memory):
             Reg[3] = score
             PC += 1
 
-        if PC == len(I):
+        if PC == len(MC):
             finished = True
         if debug_mode:
-            if (DIC % Nsteps) == 0: # print stats every Nsteps
+            if (DIC % Nsteps) == 0:  # print stats every Nsteps
                 print("Registers R0-R3: ", Reg)
                 print("Program Counter : ", PC)
                 input("Press any key to continue")
@@ -211,54 +211,93 @@ def simulate(I, Instr, Nsteps, debug_mode, Memory):
     print("Registers R0-R3: ", Reg)
     print("Data Memory :")
     for i in range(0,6):
-        print('addr '+str(i)+": HEX:"+format(Memory[i], "016b")+"   DEC: "+str(Memory[i]))
+        print('Addr '+str(i)+": HEX:"+format(Memory[i], "016b")+"   DEC: "+str(Memory[i]))
 
-    data = open("d_mem.txt","w")    # Write data back into d_mem.txt
-    for i in range(len(Memory)):
-        data.write(format(Memory[i], "016b"))
-        data.write("\n")
-    data.close()
 
 
 def main():
-    print("Welcome to ECE366 Project3 Group12 ISA Simulator!")
-
-    program = int( input("Enter which program to run: ") )
-    if ( program == 1 ):
-        instr_file = open("prog1.txt","r")
-    elif ( program == 2 ):
-        instr_file = open("prog2.txt","r")
-
-    data_file = open("d_mem.txt","r")
     Memory = []
     debug_mode = False  # is machine in debug mode?
     Nsteps = 3          # How many cycle to run before output statistics
     Instruction = []    # all instructions will be stored here
     machineInstruction = []
 
-    lineCount = 0
-    for line in instr_file: # Read in instr
-        if line == "\n" or line[0] == '#' or ':' in line:              # empty lines,comments ignored
-            continue
-        line = line.strip()
-        Instruction.append(line)                        # Copy all instruction into a list
-        lineCount += 1
+    print("Welcome to ECE366 Project3 Group12 ISA Simulator!")
 
-    print("Calling assembler...")
-    assemble(Instruction, lineCount, program)
-    print("Assembling Done.")
+    # Read in instr and convert to machine code
+    print("type 1 for program 1")
+    print("type 2 for program 2")
+    print("type 3 for both program 1 and program 2")
+    program = int(input("Enter which program to run:"))
+    if program != 1 and program != 2 and program != 3:
+        print("wrong program selection!")
+        exit()
+
+    if program ==1 or program == 2:
+        with open("prog"+str(program)+".txt", "r") as instr_file:
+            for line in instr_file:
+                if line == "\n" or line[0] == '#' or ':' in line:  # empty lines,comments ignored
+                    continue
+                # Copy all instruction into a list
+                Instruction.append(line.strip())
+        print("Calling assembler...")
+        assemble(Instruction, program)
+        print("Assembling Done.")
+
+    elif program == 3:
+        instr1 = []
+        instr2 = []
+        with open("prog1.txt", "r") as instr_file:
+            for line in instr_file:
+                if line == "\n" or line[0] == '#' or ':' in line:  # empty lines,comments ignored
+                    continue
+                # Copy all instruction into a list
+                instr1.append(line.strip())
+
+        with open("prog2.txt", "r") as instr_file:
+            for line in instr_file:
+                if line == "\n" or line[0] == '#' or ':' in line:  # empty lines,comments ignored
+                    continue
+                # Copy all instruction into a list
+                instr2.append(line.strip())
+        print("Calling assembler...")
+        assemble(instr1, 1)
+        assemble(instr2, 2)
+        print("Assembling Done.")
 
     # read MachineCode
-    with open("prog"+str(program)+"_MachineCode.txt", "r") as f:
-        for line in f:
-            machineInstruction.append(line.strip())
+    if program == 1 or program == 2:
+        with open("prog"+str(program)+"_MachineCode.txt", "r") as f:
+            for line in f:
+                machineInstruction.append(line.strip())
+    elif program == 3:
+        MC1 = []
+        MC2 = []
+        with open("prog1_MachineCode.txt", "r") as f:
+            for line in f:
+                MC1.append(line.strip())
+        with open("prog2_MachineCode.txt", "r") as f:
+            for line in f:
+                MC2.append(line.strip())
 
     # read Data Memory
-    for line in data_file:
-        if line == "\n" or line[0] == '#':              # empty lines,comments ignored
-            continue
-        line = line.strip()
-        Memory.append(int(line,2))
+    print("Data memory pattern we have:")
+    print("1] patternA.txt")
+    print("2] patternB.txt")
+    print("3] patternC.txt")
+    print("4] patternD.txt")
+    pattern = int(input("Please select pattern:"))
+    if pattern < 1 or pattern > 4:
+        print("wrong data pattern selection")
+        exit()
+    pattern_pool = ['A', 'B', 'C', 'D']
+    pattern = pattern_pool[pattern-1]
+    with open('pattern'+pattern+'.txt', 'r') as data_file:
+        for line in data_file:
+            if line == "\n" or line[0] == '#':              # empty lines,comments ignored
+                continue
+            line = line.strip()
+            Memory.append(int(line, 2))
 
 
     print("*********Simulator**********")
@@ -275,10 +314,21 @@ def main():
         print("Error, unrecognized input. Exiting")
         exit()
 
-    simulate(machineInstruction, Instruction, Nsteps, debug_mode, Memory)
+    if program == 1 or program == 2:
+        simulate(machineInstruction, Instruction, Nsteps, debug_mode, Memory)
+
+    elif program == 3:
+        simulate(MC1, instr1, Nsteps, debug_mode, Memory)
+        simulate(MC2, instr2, Nsteps, debug_mode, Memory)
+
+    # store the memory back
+    data = open("p3_group_12_dmem_"+pattern+'.txt', "w")
+    for i in range(len(Memory)):
+        data.write(format(Memory[i], "016b"))
+        data.write("\n")
+    data.close()
 
     instr_file.close()
-    data_file.close()
 
 
 if __name__ == "__main__":

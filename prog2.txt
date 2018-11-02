@@ -21,9 +21,10 @@ GetScore:
 ld R3, R2
 # R3 = Current pattern
 score
+#calculate the number of same bits between R1 and R3
 st R3, R2
 inc R2
-jpu2 R2, R0, 01
+jpu2 R2, R0, 8
 
 init R0, 6
 inc R0
@@ -37,15 +38,15 @@ init R2, 0
 FindBest:
 # jpu1 MUX[11] = 18 (instruction mem address)
 ld R3, R0
-jpu2 R3, R1, 11
+jpu2 R3, R1, 27
 # if (pointed score) < (best score), jump to LessThanBest
-jpu1 R1, R3, 10
+jpu1 R1, R3, 24
 # if (best score) < (curretn score), jump to BiggerThanBest
 
 inc R2
 # pc arrives here -> R1 = R3
 init R3, 0
-jpu2 R3, R0, 11
+jpu2 R3, R0, 27
 # R3=0 MUST < R0, jump condition is met, jump to LessThanBest
 
 BiggerThanBest:
@@ -60,7 +61,7 @@ LessThanBest:
 # jpu2 MUX[11] = 27 (instruction mem address)
 inc R0
 init R3, 108
-jpu1 R0, R3, 11
+jpu1 R0, R3, 18
 # if (address pointer) < 108, jump back; else go out
 
 Out:
@@ -71,7 +72,7 @@ inc R0
 # RO = 4
 st R1, R0
 # store the best score
-inc R0.
+inc R0
 # R0 = 5
 st R2, R0
 # store the counter

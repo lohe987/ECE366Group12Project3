@@ -51,6 +51,5 @@ subR3 R1
 END: # jpu2 MUX[00] = 14 (instruction mem address)
 init R1, 1
 inc R1
-inc R1
-# R1 = 3 
+# R1 = 2 
 st R3, R1 
