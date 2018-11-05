@@ -3,17 +3,13 @@
 # take machine code as input to run the simulator
 
 
-def disassemble(I):
-    pass
-
-
 def assemble(I, program_dupe):
 
     if program_dupe!=1 and program_dupe!=2:
         print("Error, unknown program option")
         exit()
-
-    file = open("prog"+str(program_dupe)+"_MachineCode.txt", "w")
+    # p3_group_x_p1_imem.txt
+    file = open("p3_group_12_p"+str(program_dupe)+"_imem.txt", "w")
 
     print("******* Assembler Start ********")
     for i in range(len(I)):
@@ -267,16 +263,16 @@ def main():
 
     # read MachineCode
     if program == 1 or program == 2:
-        with open("prog"+str(program)+"_MachineCode.txt", "r") as f:
+        with open("p3_group_12_p"+str(program)+"_imem.txt", "r") as f:
             for line in f:
                 machineInstruction.append(line.strip())
     elif program == 3:
         MC1 = []
         MC2 = []
-        with open("prog1_MachineCode.txt", "r") as f:
+        with open("p3_group_12_p1_imem.txt", "r") as f:
             for line in f:
                 MC1.append(line.strip())
-        with open("prog2_MachineCode.txt", "r") as f:
+        with open("p3_group_12_p2_imem.txt", "r") as f:
             for line in f:
                 MC2.append(line.strip())
 
@@ -300,7 +296,7 @@ def main():
             Memory.append(int(line, 2))
 
 
-    print("*********Simulator**********")
+    print("********* Simulator **********")
     print("Simulator has 2 modes: ")
     print(" 1] Normal execution")
     print(" 2] Debug mode")
