@@ -137,7 +137,7 @@ def simulate(MC, Instr, Nsteps, debug_mode, Memory):
     while not finished:
         fetch = MC[PC]
         fetch = fetch[1:]
-        DIC += 1
+        #DIC += 1
         if debug_mode:
             print(fetch)
             print(Instr[PC])
@@ -149,21 +149,25 @@ def simulate(MC, Instr, Nsteps, debug_mode, Memory):
             imm = MUX[MUXindex]
             Reg[R] = imm
             PC += 1
+            DIC += 2
         elif fetch[0:3] == "001":  # ld
             Rx = int(fetch[3:5], 2)
             Ry = int(fetch[5:7], 2)
             Reg[Rx] = Memory[Reg[Ry]]
             PC += 1
+            DIC += 5
         elif fetch[0:3] == "010":  # st
             Rx = int(fetch[3:5], 2)
             Ry = int(fetch[5:7], 2)
             Memory[Reg[Ry]] = Reg[Rx]
             PC += 1
+            DIC += 4
         elif fetch[0:3] == "011":  # add
             Rx = int(fetch[3:5], 2)
             Ry = int(fetch[5:7], 2)
             Reg[Rx] = Reg[Rx] + Reg[Ry]
             PC += 1
+            DIC += 4
         elif fetch[0:3] == "100":  # jpu1
             MUX = [9, 6, 24, 18]
             Rx = int(fetch[3], 2)
@@ -173,6 +177,7 @@ def simulate(MC, Instr, Nsteps, debug_mode, Memory):
                 PC = imm
             else:
                 PC += 1
+            DIC += 3
         elif fetch[0:3] == "101":  # jpu2
             MUX = [14,8,27]
             Rx = 2 + int(fetch[3],2)
@@ -182,17 +187,21 @@ def simulate(MC, Instr, Nsteps, debug_mode, Memory):
                 PC = imm
             else:
                 PC += 1
+            DIC += 3
         elif fetch[0:5] == "11100":   # subR3
             Ry = int(fetch[5:7],2)
             Reg[3] = Reg[3] - Reg[Ry]
             PC += 1
+            DIC += 4
         elif fetch[0:5] == "11101":   # inc
             Rx = int(fetch[5:7],2)
             Reg[Rx] = Reg[Rx] + 1
             PC += 1
+            DIC += 4
         elif fetch == "1111110":      # R3x6
             Reg[3] = Reg[3]*6
             PC += 1
+            DIC += 4
         elif fetch == "1111111":      # score
             Rx = Reg[3]
             Ry = Reg[1]
@@ -215,6 +224,7 @@ def simulate(MC, Instr, Nsteps, debug_mode, Memory):
                     score += 1
             Reg[3] = score
             PC += 1
+            DIC += 4 
 
         if PC == len(MC):
             finished = True
