@@ -28,7 +28,8 @@ def assemble(I, program_dupe):
             else:
                 imm = format(int(fetch[1]),"02b")
             op = "000"
-            file.write(op + R + imm + "\n")
+            string = op + R + imm + "\n"
+            #file.write(op + R + imm + "\n")
 
         elif (fetch[0:2] == "ld"):
             fetch = fetch.replace("ld","")
@@ -36,7 +37,8 @@ def assemble(I, program_dupe):
             Rx = format(int(fetch[0]),"02b")
             Ry = format(int(fetch[1]),"02b")
             op = "001"
-            file.write(op + Rx + Ry + "\n")
+            string = op + Rx + Ry + "\n"
+            #file.write(op + Rx + Ry + "\n")
 
         elif (fetch[0:2] == "st"):
             fetch = fetch.replace("st","")
@@ -44,7 +46,8 @@ def assemble(I, program_dupe):
             Rx = format(int(fetch[0]),"02b")
             Ry = format(int(fetch[1]),"02b")
             op = "010"
-            file.write(op + Rx + Ry + "\n")
+            string = op + Rx + Ry + "\n"
+            #file.write(op + Rx + Ry + "\n")
 
         elif (fetch[0:3] == "add"):
             fetch = fetch.replace("add","")
@@ -52,7 +55,8 @@ def assemble(I, program_dupe):
             Rx = format(int(fetch[0]),"02b")
             Ry = format(int(fetch[1]),"02b")
             op = "011"
-            file.write(op + Rx + Ry + "\n")
+            string = op + Rx + Ry + "\n"
+            #file.write(op + Rx + Ry + "\n")
 
         elif (fetch[0:4] == "jpu1"):
             fetch = fetch.replace("jpu1","")
@@ -68,7 +72,8 @@ def assemble(I, program_dupe):
             elif (fetch[2] == "18"):
                 imm = "11"
             op = "100"
-            file.write(op + Rx + Ry + imm + "\n")
+            string = op + Rx + Ry + imm + "\n"
+            #file.write(op + Rx + Ry + imm + "\n")
 
         elif (fetch[0:4] == "jpu2"):
             fetch = fetch.replace("jpu2","")
@@ -82,23 +87,42 @@ def assemble(I, program_dupe):
             elif (fetch[2] == "27"):
                 imm = "10"
             op = "101"
-            file.write(op + Rx + Ry + imm + "\n")
+            string = op + Rx + Ry + imm + "\n"
+            #file.write(op + Rx + Ry + imm + "\n")
         elif (fetch[0:4] == "sub3"):
             fetch = fetch.replace("sub3", "")
             Rx = format(int(fetch),"02b")
             op = "11100"
-            file.write(op + Rx + "\n")
+            #file.write(op + Rx + "\n")
+            string = op + Rx + "\n"
         elif (fetch[0:3] == "inc"):
             fetch = fetch.replace("inc", "")
             Rx = format(int(fetch),"02b")
             op = "11101"
-            file.write(op + Rx + "\n")
+            string = op + Rx + "\n"
+            #file.write(op + Rx + "\n")
         elif (fetch[0:3] == "3x6"):
             op = "1111110"
-            file.write(op + "\n")
+            string = op + "\n"
+            #file.write(op + "\n")
         elif (fetch[0:5] == "score"):
             op = "1111111"
-            file.write(op + "\n")
+            string = op + "\n"
+            #file.write(op + "\n")
+        elif( fetch[0:4] == "halt" ):
+            string = "1111100\n"
+
+        oneCount = 0
+        for c in string:
+            if ( c == "1" ):
+                oneCount = oneCount + 1
+
+        if ( oneCount % 2 == 1 ):
+            string = "1" + string
+        else:
+            string = "0" + string
+            
+        file.write(string)
     file.close()
     print("Machine Code already wrote into prog"+str(program_dupe)+"_MachineCode.txt")
     print("******* Assembler End ********")
@@ -112,6 +136,7 @@ def simulate(MC, Instr, Nsteps, debug_mode, Memory):
     finished = False
     while not finished:
         fetch = MC[PC]
+        fetch = fetch[1:]
         DIC += 1
         if debug_mode:
             print(fetch)
