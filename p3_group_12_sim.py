@@ -119,7 +119,7 @@ def simulate(MC, Instr, Nsteps, debug_mode, Memory):
     print("Registers R0-R3:     ", Reg)
     print("Data Memory :")
     for i in range(0,6):
-        print('Addr '+str(i)+": HEX:"+format(Memory[i], "016b")+"   DEC: "+str(Memory[i]))
+        print('Addr '+str(i)+": HEX:"+format(Memory[i], "08x")+"   DEC: "+str(Memory[i]))
 
 
 def assemble(I, program_dupe):
